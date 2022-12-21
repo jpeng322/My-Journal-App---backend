@@ -3,6 +3,8 @@ require("dotenv").config()
 const express = require("express")
 const app = express()
 app.use(express.json())
+const cors = require('cors')
+app.use(cors())
 
 const mongoose = require("mongoose")
 mongoose.set('strictQuery', true)
@@ -13,6 +15,7 @@ mongoose.connect(process.env.MONGODB_URI).then(
 const router = require("./controllers/routes")
 
 app.use("/entries", router)
+app.use(express.static('dist'))
 
 const journals = [
     {
