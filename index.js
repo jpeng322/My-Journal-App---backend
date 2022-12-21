@@ -10,24 +10,26 @@ mongoose.connect(process.env.MONGODB_URI).then(
     console.log("connected to mongo")
 )
 
+const Entry = require("./models/entry")
+
 const journals = [
     {
-        topic: "Today is work day",
-        date: "December 43, 2223",
-        details: "asdsadasdasdsad",
-        id: 1
+        "topic": "Today is work day",
+        "date": "December 43, 2223",
+        "details": "asdsadasdasdsad",
+        "id": 1
     },
     {
-        topic: "BLAHBLAHBLAHDAY",
-        date: "January 12, 2123",
-        details: "asdsadasdasdsad",
-        id: 2
+        "topic": "BLAHBLAHBLAHDAY",
+        "date": "January 12, 2123",
+        "details": "asdsadasdasdsad",
+        "id": 2
     },
     {
-        topic: "my bday",
-        date: "March 22, 1999",
-        details: "Its my bday today ya",
-        id: 3
+        "topic": "my bday",
+        "date": "March 22, 1999",
+        "details": "Its my bday today ya",
+        "id": 3
     }
 ]
 
@@ -38,32 +40,44 @@ app.listen(process.env.PORT, (req, res) => {
 
 
 app.get("/entries", (req, res) => {
-    res.json(journals)
+    Entry.find({}).then(entries => res.json(entries))
 })
 
-app.get("/", (req, res) => {
+app.get("/entries/:id", (req, res) => {
+    id = req.params.id
+    console.log(id)
+    Entry.findById(id).then(entry => res.json(entry))
 
 })
 
 app.post("/entries", (req, res) => {
-    console.log("posted")
-    const body = req.body
-    console.log("error")
+    const entry = new Entry(req.body)
 
-    const { topic, date, details } = body
+    const { topic, date, details } = entry
 
-    newEntry = {
-        topic,
-        date,
-        details
+    // newEntry = {
+    //     topic,
+    //     date,
+    //     details
+    // }
+
+    entry.save().then(entry => {
+        if (entry) {
+            res.status(200).json(entry)
+        } else {
+            console.log("no")
+            res.status(400).json({ mssg: "empty object" })
+        }
     }
 
-    if (Object.keys(body).length > 0) {
-        res.status(200).json([newEntry, ...journals])
-    } else {
-        console.log("no")
-        res.status(400).json({ mssg: "empty object" })
-    }
+    )
+
+    // if (Object.keys(body).length > 0) {
+    //     res.status(200).json([newEntry, ...journals])
+    // } else {
+    //     console.log("no")
+    //     res.status(400).json({ mssg: "empty object" })
+    // }
 
 
     // res.status(200).json([newEntry, ...journals])
@@ -72,6 +86,17 @@ app.post("/entries", (req, res) => {
     // })
 })
 
-app.delete("", (req, res) => {
+app.delete("/entries/:id", (req, res) => {
+    const id = req.params.id
 
+    Entry.findByIdAndDelete(id).then(result => res.status(200).json({ mssg: "object deleted" }))
+
+})
+
+app.put("/entries/:id", (req, res) => {
+    const id = req.params.id
+    const body = req.body
+    console.log({...body})
+
+    Entry.findByIdAndUpdate(id, { ...body }).then(entry => res.status(200).json(entry))
 })
