@@ -10,7 +10,9 @@ mongoose.connect(process.env.MONGODB_URI).then(
     console.log("connected to mongo")
 )
 
-const Entry = require("./models/entry")
+const router = require("./controllers/routes")
+
+app.use("/entries", router)
 
 const journals = [
     {
@@ -39,64 +41,46 @@ app.listen(process.env.PORT, (req, res) => {
 })
 
 
-app.get("/entries", (req, res) => {
-    Entry.find({}).then(entries => res.json(entries))
-})
+// app.get("/entries", (req, res) => {
+//     Entry.find({}).then(entries => res.json(entries))
+// })
 
-app.get("/entries/:id", (req, res) => {
-    id = req.params.id
-    console.log(id)
-    Entry.findById(id).then(entry => res.json(entry))
+// app.get("/entries/:id", (req, res) => {
+//     id = req.params.id
+//     console.log(id)
+//     Entry.findById(id).then(entry => res.json(entry))
 
-})
+// })
 
-app.post("/entries", (req, res) => {
-    const entry = new Entry(req.body)
+// app.post("/entries", (req, res) => {
+//     const entry = new Entry(req.body)
 
-    const { topic, date, details } = entry
+//     const { topic, date, details } = entr
 
-    // newEntry = {
-    //     topic,
-    //     date,
-    //     details
-    // }
+//     entry.save().then(entry => {
+//         if (entry) {
+//             res.status(200).json(entry)
+//         } else {
+//             console.log("no")
+//             res.status(400).json({ mssg: "empty object" })
+//         }
+//     }
 
-    entry.save().then(entry => {
-        if (entry) {
-            res.status(200).json(entry)
-        } else {
-            console.log("no")
-            res.status(400).json({ mssg: "empty object" })
-        }
-    }
+//     )
 
-    )
+// })
 
-    // if (Object.keys(body).length > 0) {
-    //     res.status(200).json([newEntry, ...journals])
-    // } else {
-    //     console.log("no")
-    //     res.status(400).json({ mssg: "empty object" })
-    // }
+// app.delete("/entries/:id", (req, res) => {
+//     const id = req.params.id
 
+//     Entry.findByIdAndDelete(id).then(result => res.status(200).json({ mssg: "object deleted" }))
 
-    // res.status(200).json([newEntry, ...journals])
-    // .catch(error => {
-    //     console.log(error)
-    // })
-})
+// })
 
-app.delete("/entries/:id", (req, res) => {
-    const id = req.params.id
+// app.put("/entries/:id", (req, res) => {
+//     const id = req.params.id
+//     const body = req.body
+//     console.log({...body})
 
-    Entry.findByIdAndDelete(id).then(result => res.status(200).json({ mssg: "object deleted" }))
-
-})
-
-app.put("/entries/:id", (req, res) => {
-    const id = req.params.id
-    const body = req.body
-    console.log({...body})
-
-    Entry.findByIdAndUpdate(id, { ...body }).then(entry => res.status(200).json(entry))
-})
+//     Entry.findByIdAndUpdate(id, { ...body }).then(entry => res.status(200).json(entry))
+// })
