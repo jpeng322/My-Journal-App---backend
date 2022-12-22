@@ -23,7 +23,6 @@ router.post("/", (req, res) => {
         if (entry) {
             res.status(200).json(entry)
         } else {
-            console.log("no")
             res.status(400).json({ mssg: "empty object" })
         }
     }
@@ -34,7 +33,7 @@ router.post("/", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     const id = req.params.id
-
+    console.log
     Entry.findByIdAndDelete(id).then(result => res.status(200).json({ mssg: "object deleted" }))
 
 })
@@ -42,9 +41,9 @@ router.delete("/:id", (req, res) => {
 router.put("/:id", (req, res) => {
     const id = req.params.id
     const body = req.body
-    console.log({...body})
+    console.log({ ...body })
 
-    Entry.findByIdAndUpdate(id, { ...body }).then(entry => res.status(200).json(entry))
+    Entry.findByIdAndUpdate(id, { ...body }).then(entry => res.status(200).json(body)).catch(err => console.log(err))
 })
 
 
