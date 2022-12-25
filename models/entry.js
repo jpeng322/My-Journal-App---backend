@@ -3,7 +3,8 @@ const mongoose = require("mongoose")
 const entrySchema = new mongoose.Schema({
     topic: String,
     date: String,
-    details: String
+    details: String,
+    favorite: Boolean
 })
 
 entrySchema.set('toJSON', {

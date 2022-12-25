@@ -12,9 +12,11 @@ mongoose.connect(process.env.MONGODB_URI).then(
     console.log("connected to mongo")
 )
 
-const router = require("./controllers/routes")
+const entryRoutes = require("./controllers/entryRoutes")
+const userRoutes = require("./controllers/userRoutes")
 
-app.use("/entries", router)
+app.use("/entries", entryRoutes)
+app.use("/", userRoutes)
 app.use(express.static('dist'))
 
 const journals = [
