@@ -4,6 +4,9 @@ const router = express.Router()
 
 const Entry = require("../models/entry")
 
+const userAuth = require("../middleware/userAuth")
+
+router.use(userAuth)
 
 router.get("/", (req, res) => {
     Entry.find({}).then(entries => res.json(entries))

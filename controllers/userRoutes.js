@@ -24,8 +24,9 @@ const createToken = (id) => {
 
 router.post("/signup", async (req, res) => {
     const { username, password } = req.body
+    console.log(username,password)
     const hashPass = await bcrypt.hash(password, 10)
-    console.log(hashPass)
+    // console.log(hashPass)
     const user = new User({ username, password: hashPass })
 
     if (username === "" || password === "") {
@@ -79,13 +80,14 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", (req, res) => {
     const { username, password } = req.body
+    // console.log(req)
 
     if (!username || !password) {
         res.json({ mssg: "Invalid username or password" })
     }
 
     User.findOne({ username }).then(user => {
-        console.log(user)
+        // console.log(user)
 
         if (!user) {
             res.json({ mssg: "Incorrect email" })
