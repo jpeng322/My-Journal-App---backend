@@ -24,7 +24,7 @@ const createToken = (id) => {
 
 router.post("/signup", async (req, res) => {
     const { username, password } = req.body
-    console.log(username,password)
+    console.log(username, password)
     const hashPass = await bcrypt.hash(password, 10)
     // console.log(hashPass)
     const user = new User({ username, password: hashPass })
@@ -78,34 +78,43 @@ router.post("/signup", async (req, res) => {
 
 })
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
     const { username, password } = req.body
     // console.log(req)
-
-    if (!username || !password) {
-        res.json({ mssg: "Invalid username or password" })
-    }
-
-    User.findOne({ username }).then(user => {
-        // console.log(user)
-
-        if (!user) {
-            res.json({ mssg: "Incorrect email" })
-            return
+    try {
+        if (!username || !password) {
+            // res.json({ mssg: "Invalid username or password" })
+            throw Error("No username or password filled")
         }
-        // bcrypt.compare(password, user.password).then(matched => console.log(matched === false))
+
+        const user = await User.findOne({ username })
+        if (!user) {
+            throw Error('Incorrect email')
+        }
+
+        const match = await bcrypt.compare(password, user.password)
+        if (!match) {
+            throw Error('Incorrect password')
+        }
 
         bcrypt.compare(password, user.password).then(matched => {
-            if (matched === true) {
-                const token = createToken(user._id)
-                res.json({ user, token, mssg: "logged in" })
-            } else {
-                res.json({ mssg: "Incorrect password" })
-            }
+            console.log("returning")
+            const token = createToken(user._id)
+            res.status(200).json({ user, token, mssg: "logged in" })
+    
         })
-    })
+    }
+    catch (error) {
+        res.status(400).json({ error: error.message })
+    }})
+    
+//     bcrypt.compare(password, user.password).then(matched => {
+//         console.log("returning")
+//         const token = createToken(user._id)
+//         res.status(200).json({ user, token, mssg: "logged in" })
 
-})
+//     })
+// })
 
 module.exports = router
 
