@@ -4,7 +4,8 @@ const entrySchema = new mongoose.Schema({
     topic: String,
     date: String,
     details: String,
-    favorite: Boolean
+    favorite: Boolean,
+    user_id: String
 })
 
 entrySchema.set('toJSON', {

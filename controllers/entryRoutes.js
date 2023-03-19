@@ -9,7 +9,12 @@ const userAuth = require("../middleware/userAuth")
 router.use(userAuth)
 
 router.get("/", (req, res) => {
-    Entry.find({}).then(entries => res.json(entries))
+    // console.log(req.body)
+    // console.log(req.user_id, "asdasdasdasdasdasdasd")
+    const user_id = req.user_id
+    Entry.find({"user_id": req.user}).then(entries => { 
+        console.log(entries)
+        res.json(entries) })
 })
 
 router.get("/:id", (req, res) => {
@@ -20,8 +25,9 @@ router.get("/:id", (req, res) => {
 })
 
 router.post("/", (req, res) => {
-    const entry = new Entry(req.body)
-
+    console.log(req.user, "REQ USER ROUTER POST")
+    const entry = new Entry({ ...req.body, "user_id": req.user })
+    console.log(entry, "POST REUQST")
     entry.save().then(entry => {
         if (entry) {
             res.status(200).json(entry)
