@@ -30,31 +30,44 @@ router.post("/signup", async (req, res) => {
     const user = new User({ username, password: hashPass })
 
     if (username === "" || password === "") {
-        res.status(400).json({ msg: "Invalid username or password." })
+        res.status(400).json({
+            msg: "Invalid username or password."
+        })
         return
     }
 
     if (!validator.isEmail(username)) {
-        res.status(400).json({ msg: "Username is not an email" })
+        res.status(400).json({ msg: "Username is not an email." })
         return
     }
 
-    if (!validator.isStrongPassword(password)) {
-        res.status(400).json({ msg: "Password is not strong enough" })
+    if (!validator.isStrongPassword(password, {
+        minLength: 8, minLowercase: 1,
+        minUppercase: 1, minNumbers: 1, minSymbols: 1
+    })) {
+        res.status(400).json({ msg: "Password is not strong enough. Make sure your password has at least 8 characters, 1 lowercase, 1 uppercase, 1 number, and 1 symbol!" })
         return
     }
 
 
     User.findOne({ username }).then(username => {
         if (username) {
-            res.status(400).json({ mssg: "username exists" })
+            res.status(400).json({
+                msg: "Username already exists."
+            })
             return
         } else {
             user.save().then(user => {
                 console.log(user._id)
                 const token = createToken(user._id)
                 console.log(token)
-                res.status(200).json({ user, token })
+                res.status(200).json(
+                    {
+                        msg: "User successfully signed up!",
+                        user,
+                        token
+                    }
+                )
             }).catch
                 (
                     error => res.status(400).json({ error: error.message })
@@ -84,30 +97,30 @@ router.post("/login", async (req, res) => {
     try {
         if (!username || !password) {
             // res.json({ mssg: "Invalid username or password" })
-            throw Error("No username or password filled")
+            throw Error("No username or password filled.")
         }
 
         const user = await User.findOne({ username })
         if (!user) {
-            throw Error('Incorrect email')
+            throw Error('User does not exist.')
         }
 
         const match = await bcrypt.compare(password, user.password)
         if (!match) {
-            throw Error('Incorrect password')
+            throw Error('Incorrect email or password.')
         }
 
         bcrypt.compare(password, user.password).then(matched => {
-            console.log("returning")
             const token = createToken(user._id)
-            res.status(200).json({ user, token, mssg: "logged in" })
-    
+            res.status(200).json({ user, token, mssg: "Logged in." })
+
         })
     }
     catch (error) {
         res.status(400).json({ error: error.message })
-    }})
-    
+    }
+})
+
 //     bcrypt.compare(password, user.password).then(matched => {
 //         console.log("returning")
 //         const token = createToken(user._id)
